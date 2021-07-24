@@ -1,21 +1,19 @@
-import { HamburgerIcon } from "@chakra-ui/icons";
-import {
-  Box,
-  Button,
-  Drawer,
-  DrawerBody,
-  DrawerContent,
-  DrawerOverlay,
-  Flex,
-  Heading,
-  IconButton,
-  Link,
-  useDisclosure
-} from "@chakra-ui/react";
-import { memo, VFC } from "react";
+import { Box, Flex, Heading, Link, useDisclosure } from "@chakra-ui/react";
+import { memo, useCallback, VFC } from "react";
+import { useHistory } from "react-router-dom";
+import { MenuIconButton } from "../../atoms/button/MenuIconButton";
+import { MenuDrawer } from "../../molecules/MenuDrawer";
 
 export const Header: VFC = memo(() => {
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const history = useHistory();
+  const onClickHome = useCallback(() => history.push("/home"), []);
+  const onClickUserManagement = useCallback(
+    () => history.push("/home/user_management"),
+    []
+  );
+  const onClickSetting = useCallback(() => history.push("/home/setting"), []);
+
   return (
     <>
       <Flex
@@ -26,7 +24,13 @@ export const Header: VFC = memo(() => {
         justify="space-around"
         padding={{ base: 3, md: 5 }}
       >
-        <Flex align="center" as="a" mr={8} _hover={{ cursor: "pointer" }}>
+        <Flex
+          align="center"
+          as="a"
+          mr={8}
+          _hover={{ cursor: "pointer" }}
+          onClick={onClickHome}
+        >
           <Heading as="h1" fontSize={{ base: "md", md: "lg" }}>
             ユーザー管理アプリ
           </Heading>
@@ -38,28 +42,19 @@ export const Header: VFC = memo(() => {
           display={{ base: "none", md: "flex" }}
         >
           <Box pr={4}>
-            <Link>ユーザー一覧</Link>
+            <Link onClick={onClickUserManagement}>ユーザー一覧</Link>
           </Box>
-          <Link>設定</Link>
+          <Link onClick={onClickSetting}>設定</Link>
         </Flex>
-        <IconButton
-          aria-label="メニューボタン"
-          icon={<HamburgerIcon />}
-          size="sm"
-          variant="unstyled"
-          display={{ base: "block", md: "none" }}
-          onClick={onOpen}
-        />
+        <MenuIconButton onOpen={onOpen} />
       </Flex>
-      <Drawer placement="left" size="xs" onClose={onClose} isOpen={isOpen}>
-        <DrawerOverlay>
-          <DrawerContent>
-            <DrawerBody>
-              <Button></Button>
-            </DrawerBody>
-          </DrawerContent>
-        </DrawerOverlay>
-      </Drawer>
+      <MenuDrawer
+        isOpen={isOpen}
+        onClose={onClose}
+        onClickHome={onClickHome}
+        onClickSetting={onClickSetting}
+        onClickUserManagement={onClickUserManagement}
+      />
     </>
   );
 });
